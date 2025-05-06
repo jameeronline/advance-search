@@ -1,0 +1,20 @@
+:root {
+  /* border width variables */
+  --border-width-xs: calc(var(--base-spacer) * 0.0625);
+  --border-width-sm: calc(var(--base-spacer) * 0.125);
+  --border-width-md: calc(var(--base-spacer) * 0.25);
+  --border-width-lg: calc(var(--base-spacer) * 0.375);
+  --border-style: solid;
+
+  /* border radius variables */
+  --border-radius-xs: calc(var(--base-spacer) * 0.125);
+  --border-radius-sm: calc(var(--base-spacer) * 0.25);
+  --border-radius-md: calc(var(--base-spacer) * 0.375);
+  --border-radius-lg: calc(var(--base-spacer) * 0.5);
+  --border-radius-full: 9999px;
+
+  --transition-duration-xs: 0.2s;
+  --transition-duration-sm: 0.3s;
+  --transition-duration-md: 0.4s;
+  --transition-easing: ease-in-out;
+}

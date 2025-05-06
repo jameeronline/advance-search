@@ -1,0 +1,16 @@
+/* Variables */
+@import url(./variables/index.css);
+@import url(./design-tokens/index.css);
+
+/* Theme */
+@import url(./theme/index.css);
+
+/* Reset */
+@import url(./reset/index.css);
+
+/* styles */
+body {
+  color: var(--default-black);
+  font-family: var(--body-font-family);
+  background-color: var(--body-bg);
+}

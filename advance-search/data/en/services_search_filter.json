@@ -1,0 +1,143 @@
+[
+  {
+    "name": "By Type",
+    "id": "byType",
+    "URL": "#ByType",
+    "ariaExpanded": "false",
+    "childLink": [
+      {
+        "name": "Services",
+        "id": "byTypeServices",
+        "data-filter": "SERVICES",
+        "URL": "#byTypeServices"
+      },
+      {
+        "name": "Contents",
+        "id": "byTypeContents",
+        "data-filter": "CONTENTS",
+        "URL": "#byTypeContents"
+      }
+    ]
+  },
+  {
+    "name": "By Sector",
+    "id": "bySector",
+    "URL": "#Sector",
+    "ariaExpanded": "false",
+    "childLink": [
+      {
+        "name": "Passport",
+        "id": "Passport-Services",
+        "data-filter": "Passport-Services",
+        "URL": "#Passport-Services"
+      },
+      {
+        "name": "Traffic",
+        "id": "Traffic-Services",
+        "data-filter": "Traffic-Services",
+        "URL": "#Traffic-Services"
+      },
+      {
+        "name": "Expatriates Affairs",
+        "id": "Expatriate-Affairs-Services",
+        "data-filter": "Expatriate-Affairs-Services",
+        "URL": "#Expatriate-Affairs-Services"
+      },
+      {
+        "name": "Civil Affairs",
+        "id": "Civil-Affairs-Services",
+        "data-filter": "Civil-Affairs-Services",
+        "URL": "#Civil-Affairs-Services"
+      },
+      {
+        "name": "Prisons",
+        "id": "Prisons",
+        "data-filter": "Prisons",
+        "URL": "#Prisons"
+      },
+      {
+        "name": "Public Security",
+        "id": "General-Directorate",
+        "data-filter": "General-Directorate",
+        "URL": "#General-Directorate"
+      },
+      {
+        "name": "Emirates of Regions",
+        "id": "Emirates",
+        "data-filter": "Emirates",
+        "URL": "#Emirates"
+      },
+      {
+        "name": "Moi Diwan",
+        "id": "Moi-Services",
+        "data-filter": "Moi-Services",
+        "URL": "#Moi-Services"
+      },
+      {
+        "name": "Ministry of Hajj",
+        "id": "Hajj-amd-Umrah",
+        "data-filter": "Hajj-amd-Umrah",
+        "URL": "#Hajj-amd-Umrah"
+      },
+      {
+        "name": "Public Prosecution",
+        "id": "Public-Prosecution",
+        "data-filter": "Public-Prosecution",
+        "URL": "#Public-Prosecution"
+      },
+      {
+        "name": "General Services",
+        "id": "General-Services",
+        "data-filter": "General-Services",
+        "URL": "#General-Services"
+      }
+    ]
+  },
+  {
+    "name": "Community Members",
+    "id": "byCommunityMember",
+    "URL": "#target-group",
+    "ariaExpanded": "false",
+    "childLink": [
+      {
+        "name": "Citizen",
+        "id": "cmCitizen",
+        "data-filter": "Citizen",
+        "URL": "#Citizen"
+      },
+      {
+        "name": "Resident",
+        "id": "cmResident",
+        "data-filter": "Resident",
+        "URL": "#Resident"
+      },
+      {
+        "name": "Visitor",
+        "id": "cmVisitor",
+        "data-filter": "Visitor",
+        "URL": "#Visitor"
+      }
+    ]
+  },
+  {
+    "name": "Service Channels",
+    "id": "byServiceChannel",
+    "childLink": [
+      {
+        "name": "Absher Portal",
+        "id": "absherPortal",
+        "data-filter": "Absher Portal"
+      },
+      {
+        "name": "Mobile Application",
+        "id": "mobileApplication",
+        "data-filter": "Mobile Application"
+      },
+      {
+        "name": "Tawakkalna",
+        "id": "tawakkalna",
+        "data-filter": "Tawakkalna"
+      }
+    ]
+  }
+]

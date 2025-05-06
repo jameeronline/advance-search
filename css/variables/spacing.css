@@ -1,0 +1,29 @@
+:root {
+  --default-spacing: 16px;
+  --base-spacer: 1rem;
+  --spacing-xxs: calc(var(--base-spacer) * 0.125);
+  --spacing-xs: calc(var(--base-spacer) * 0.25);
+  --spacing-sm: calc(var(--base-spacer) * 0.5);
+  --spacing-md: calc(var(--base-spacer) * 0.75);
+  --spacing-lg: var(--base-spacer);
+  --spacing-xl: calc(var(--base-spacer) * 1.25);
+  --spacing-2xl: calc(var(--base-spacer) * 1.5);
+  --spacing-3xl: calc(var(--base-spacer) * 1.75);
+  --spacing-4xl: calc(var(--base-spacer) * 2);
+  --spacing-5xl: calc(var(--base-spacer) * 2.25);
+  --spacing-6xl: calc(var(--base-spacer) * 2.5);
+  --spacing-7xl: calc(var(--base-spacer) * 2.75);
+  --spacing-8xl: calc(var(--base-spacer) * 3);
+  --spacing-9xl: calc(var(--base-spacer) * 3.25);
+  --spacing-10xl: calc(var(--base-spacer) * 3.5);
+  --spacing-11xl: calc(var(--base-spacer) * 3.75);
+  --spacing-12xl: calc(var(--base-spacer) * 4);
+  --spacing-13xl: calc(var(--base-spacer) * 5);
+  --spacing-14xl: calc(var(--base-spacer) * 6);
+  --spacing-15xl: calc(var(--base-spacer) * 7);
+  --spacing-16xl: calc(var(--base-spacer) * 8);
+  --spacing-17xl: calc(var(--base-spacer) * 9);
+  --spacing-18xl: calc(var(--base-spacer) * 10);
+  --spacing-19xl: calc(var(--base-spacer) * 15);
+  --spacing-20xl: calc(var(--base-spacer) * 20);
+}

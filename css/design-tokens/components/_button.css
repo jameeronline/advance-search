@@ -1,0 +1,9 @@
+.btn {
+  --btn-spacing-x: 1rem;
+  --btn-spacing-y: 0.25rem;
+
+  --btn-height-xs: 1.5rem;
+  --btn-height-md: 2rem;
+  --btn-height-lg: 2.5rem;
+  --btn-height-xl: 3rem;
+}

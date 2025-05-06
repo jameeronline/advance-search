@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Team Members</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        color: #333;
+        padding: 20px;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 30px;
+      }
+      .search-container {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+      }
+      .search-input {
+        padding: 10px 15px;
+        width: 100%;
+        max-width: 500px;
+        border: 1px solid #ddd;
+        border-radius: 25px;
+        font-size: 16px;
+        outline: none;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .search-input:focus {
+        border-color: #3498db;
+      }
+      .filter-container {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .filter-select {
+        padding: 8px 15px;
+        border-radius: 20px;
+        border: 1px solid #ddd;
+        background-color: white;
+        cursor: pointer;
+      }
+      .cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      .card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+      .card-header {
+        background-color: #3498db;
+        color: white;
+        padding: 15px;
+      }
+      .card-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .card-subtitle {
+        margin: 5px 0 0;
+        font-size: 14px;
+        opacity: 0.9;
+      }
+      .card-body {
+        padding: 15px;
+      }
+      .card-description {
+        margin-bottom: 15px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .tag {
+        background-color: #f1f5f9;
+        color: #334155;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+      }
+      .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 30px;
+      }
+      .page-btn {
+        padding: 8px 15px;
+        border: 1px solid #ddd;
+        background-color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .page-btn:hover {
+        background-color: #f1f5f9;
+      }
+      .page-btn.active {
+        background-color: #3498db;
+        color: white;
+        border-color: #3498db;
+      }
+      .no-results {
+        text-align: center;
+        grid-column: 1 / -1;
+        padding: 40px;
+        color: #666;
+      }
+      .team-tag {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 3px 8px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: bold;
+      }
+      .card-header {
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" x-data="teamMembers()">
+      <h1>Our Team Members</h1>
+
+      <div class="search-container">
+        <input x-model="searchTerm" @input="resetPage()" class="search-input" type="text" placeholder="Search by name, role, or description..." />
+      </div>
+
+      <div class="filter-container">
+        <select x-model="teamFilter" @change="resetPage()" class="filter-select">
+          <option value="">All Teams</option>
+          <template x-for="team in allTeams" :key="team">
+            <option x-text="team" :value="team" style="text-transform: capitalize"></option>
+          </template>
+        </select>
+
+        <select x-model="groupFilter" @change="resetPage()" class="filter-select">
+          <option value="">All Groups</option>
+          <template x-for="group in allGroups" :key="group">
+            <option x-text="group" :value="group" style="text-transform: capitalize"></option>
+          </template>
+        </select>
+
+        <select x-model="channelFilter" @change="resetPage()" class="filter-select">
+          <option value="">All Channels</option>
+          <option value="web">Web</option>
+          <option value="mobile">Mobile</option>
+        </select>
+
+        <select x-model="sortOrder" @change="resetPage()" class="filter-select">
+          <option value="">Default Order</option>
+          <option value="asc">Name (A-Z)</option>
+          <option value="desc">Name (Z-A)</option>
+        </select>
+      </div>
+
+      <div class="cards-container">
+        <template x-if="filteredMembers.length === 0">
+          <div class="no-results">No team members found matching your criteria.</div>
+        </template>
+
+        <template x-for="member in paginatedMembers" :key="member.slug">
+          <div class="card">
+            <div class="card-header" :style="getTeamColor(member.team)">
+              <span class="team-tag" x-text="member.team"></span>
+              <h3 class="card-title" x-text="member.title"></h3>
+              <p class="card-subtitle" x-text="member.role"></p>
+            </div>
+            <div class="card-body">
+              <p class="card-description" x-text="member.description"></p>
+              <div class="card-tags">
+                <template x-for="group in member.group.split(', ')" :key="group">
+                  <span class="tag" x-text="group"></span>
+                </template>
+              </div>
+              <div class="card-tags" style="margin-top: 10px">
+                <span class="tag" x-text="'Channels: ' + member.channel"></span>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div class="pagination" x-show="filteredMembers.length > itemsPerPage">
+        <button class="page-btn" @click="currentPage = 1" :disabled="currentPage === 1">First</button>
+
+        <button class="page-btn" @click="currentPage--" :disabled="currentPage === 1">Previous</button>
+
+        <template x-for="page in totalPages" :key="page">
+          <button class="page-btn" :class="{ 'active': currentPage === page }" @click="currentPage = page" x-text="page"></button>
+        </template>
+
+        <button class="page-btn" @click="currentPage++" :disabled="currentPage === totalPages">Next</button>
+
+        <button class="page-btn" @click="currentPage = totalPages" :disabled="currentPage === totalPages">Last</button>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("alpine:init", () => {
+        Alpine.data("teamMembers", () => ({
+          members: [
+            {
+              team: "frontend",
+              title: "John Deo",
+              slug: "john-deo",
+              role: "Senior Frontend Developer",
+              description: "Experienced in building responsive and interactive user interfaces with modern JavaScript frameworks.",
+              group: "webapp, ui",
+              channel: "web, mobile",
+            },
+            {
+              team: "frontend",
+              title: "Jane Smith",
+              slug: "jane-smith",
+              role: "UI/UX Designer",
+              description: "Passionate about creating intuitive and visually appealing user experiences.",
+              group: "ui, design",
+              channel: "web, mobile",
+            },
+            {
+              team: "frontend",
+              title: "David Lee",
+              slug: "david-lee",
+              role: "Frontend Engineer",
+              description: "Specializes in React and Vue.js development, focusing on performance and code quality.",
+              group: "webapp",
+              channel: "web",
+            },
+            {
+              team: "backend",
+              title: "Sarah Khan",
+              slug: "sarah-khan",
+              role: "Backend Developer",
+              description: "Expert in building scalable and robust server-side applications using Node.js and Python.",
+              group: "api, database",
+              channel: "web, mobile",
+            },
+            {
+              team: "backend",
+              title: "Michael Brown",
+              slug: "michael-brown",
+              role: "Database Administrator",
+              description: "Manages and optimizes databases for high performance and data integrity.",
+              group: "database",
+              channel: "web, mobile",
+            },
+            {
+              team: "backend",
+              title: "Emily Wilson",
+              slug: "emily-wilson",
+              role: "API Developer",
+              description: "Designs and implements RESTful APIs for seamless data exchange between applications.",
+              group: "api",
+              channel: "web, mobile",
+            },
+            {
+              team: "fullstack",
+              title: "Robert Garcia",
+              slug: "robert-garcia",
+              role: "Full Stack Developer",
+              description: "Proficient in both frontend and backend development, delivering end-to-end solutions.",
+              group: "webapp, api",
+              channel: "web",
+            },
+            {
+              team: "fullstack",
+              title: "Jessica Martinez",
+              slug: "jessica-martinez",
+              role: "Full Stack Engineer",
+              description: "Capable of handling diverse projects, from UI design to server-side logic and database management.",
+              group: "webapp, ui, api, database",
+              channel: "web, mobile",
+            },
+            {
+              team: "fullstack",
+              title: "Christopher Rodriguez",
+              slug: "christopher-rodriguez",
+              role: "Senior Full Stack Developer",
+              description: "Leads complex projects, ensuring seamless integration and optimal performance.",
+              group: "webapp, api",
+              channel: "web",
+            },
+            {
+              team: "qa",
+              title: "Ashley Perez",
+              slug: "ashley-perez",
+              role: "QA Engineer",
+              description: "Ensures high-quality software through rigorous testing and debugging.",
+              group: "testing",
+              channel: "web, mobile",
+            },
+            {
+              team: "qa",
+              title: "Matthew Taylor",
+              slug: "matthew-taylor",
+              role: "Automation Tester",
+              description: "Develops and implements automated testing scripts to improve efficiency and accuracy.",
+              group: "testing",
+              channel: "web, mobile",
+            },
+            {
+              team: "qa",
+              title: "Amanda Anderson",
+              slug: "amanda-anderson",
+              role: "QA Lead",
+              description: "Manages QA processes and ensures adherence to best practices.",
+              group: "testing, management",
+              channel: "web, mobile",
+            },
+            {
+              team: "design",
+              title: "Kevin Thomas",
+              slug: "kevin-thomas",
+              role: "Graphic Designer",
+              description: "Creates visually stunning graphics and branding materials for web and mobile applications.",
+              group: "design",
+              channel: "web, mobile",
+            },
+            {
+              team: "design",
+              title: "Stephanie Jackson",
+              slug: "stephanie-jackson",
+              role: "UX Researcher",
+              description: "Conducts user research to understand user needs and improve product usability.",
+              group: "design, research",
+              channel: "web, mobile",
+            },
+            {
+              team: "design",
+              title: "Brian White",
+              slug: "brian-white",
+              role: "Interaction Designer",
+              description: "Focuses on creating seamless and engaging interactions within digital products.",
+              group: "design, ui",
+              channel: "web, mobile",
+            },
+            {
+              team: "devops",
+              title: "Laura Harris",
+              slug: "laura-harris",
+              role: "DevOps Engineer",
+              description: "Automates deployment processes and maintains infrastructure for optimal performance.",
+              group: "deployment, infrastructure",
+              channel: "web, mobile",
+            },
+            {
+              team: "devops",
+              title: "Brandon Martin",
+              slug: "brandon-martin",
+              role: "Cloud Architect",
+              description: "Designs and manages cloud-based infrastructure for scalability and reliability.",
+              group: "infrastructure, cloud",
+              channel: "web, mobile",
+            },
+            {
+              team: "devops",
+              title: "Nicole Thompson",
+              slug: "nicole-thompson",
+              role: "System Administrator",
+              description: "Maintains and troubleshoots server systems to ensure smooth operation.",
+              group: "infrastructure, systems",
+              channel: "web, mobile",
+            },
+            {
+              team: "project management",
+              title: "Eric Garcia",
+              slug: "eric-garcia",
+              role: "Project Manager",
+              description: "Oversees project timelines and budgets, ensuring successful delivery.",
+              group: "management",
+              channel: "web, mobile",
+            },
+            {
+              team: "project management",
+              title: "Melissa Wilson",
+              slug: "melissa-wilson",
+              role: "Scrum Master",
+              description: "Facilitates agile development processes and ensures team collaboration.",
+              group: "management, agile",
+              channel: "web, mobile",
+            },
+          ],
+          searchTerm: "",
+          teamFilter: "",
+          groupFilter: "",
+          channelFilter: "",
+          sortOrder: "", // 'asc' or 'desc'
+          currentPage: 1,
+          itemsPerPage: 6,
+
+          get allGroups() {
+            const groups = new Set();
+            this.members.forEach((member) => {
+              member.group.split(", ").forEach((group) => {
+                groups.add(group);
+              });
+            });
+            return Array.from(groups).sort();
+          },
+
+          get allTeams() {
+            const teams = new Set();
+            this.members.forEach((member) => {
+              member.team.split(", ").forEach((team) => {
+                teams.add(team);
+              });
+            });
+            return Array.from(teams).sort();
+          },
+
+          get filteredMembers() {
+            let filtered = this.members.filter((member) => {
+              // Search term filter
+              const searchMatch = this.searchTerm === "" || member.title.toLowerCase().includes(this.searchTerm.toLowerCase()) || member.role.toLowerCase().includes(this.searchTerm.toLowerCase()) || member.description.toLowerCase().includes(this.searchTerm.toLowerCase());
+
+              // Team filter
+              const teamMatch = this.teamFilter === "" || member.team.toLowerCase() === this.teamFilter.toLowerCase();
+
+              // Group filter
+              const groupMatch = this.groupFilter === "" || member.group.split(", ").includes(this.groupFilter);
+
+              // Channel filter
+              const channelMatch = this.channelFilter === "" || member.channel.includes(this.channelFilter);
+
+              return searchMatch && teamMatch && groupMatch && channelMatch;
+            });
+
+            // Apply sorting if specified
+            if (this.sortOrder) {
+              filtered = filtered.sort((a, b) => {
+                const nameA = a.title.toLowerCase();
+                const nameB = b.title.toLowerCase();
+                if (this.sortOrder === "asc") {
+                  return nameA.localeCompare(nameB);
+                } else {
+                  return nameB.localeCompare(nameA);
+                }
+              });
+            }
+
+            return filtered;
+          },
+
+          get totalPages() {
+            return Math.ceil(this.filteredMembers.length / this.itemsPerPage);
+          },
+
+          get paginatedMembers() {
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            return this.filteredMembers.slice(start, end);
+          },
+
+          resetPage() {
+            this.currentPage = 1;
+          },
+
+          getTeamColor(team) {
+            const colors = {
+              frontend: "#3498db",
+              backend: "#2ecc71",
+              fullstack: "#9b59b6",
+              qa: "#e74c3c",
+              design: "#f39c12",
+              devops: "#1abc9c",
+              "project management": "#34495e",
+            };
+            return `background-color: ${colors[team] || "#3498db"}`;
+          },
+        }));
+      });
+    </script>
+  </body>
+</html>

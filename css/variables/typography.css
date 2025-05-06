@@ -1,0 +1,39 @@
+:root {
+  /* Base typography variables */
+  --base-font-size: 1rem;
+  --base-font-line-height: 1.5;
+  --base-font-family-en: "IBM Plex Sans";
+  --base-font-family-ar: "Droid Arabic Kufi";
+  --base-font-family-default: sans-serif;
+
+  /* Base typography size variables */
+  --fs-xs: calc(var(--base-font-size) * 0.5);
+  --fs-sm: calc(var(--base-font-size) * 0.625);
+  --fs-md: calc(var(--base-font-size) * 0.75);
+  --fs-lg: calc(var(--base-font-size) * 0.875);
+  --fs-xl: var(--base-font-size);
+  --fs-xxl: calc(var(--base-font-size) * 1.25);
+
+  /* Base typography weight variables */
+  --fw-light: 100;
+  --fw-DEFAULT: 400;
+  --fw-semi-bold: 500;
+  --fw-bold: 700;
+  --body-fs: var(--fs-lg);
+  --body-lh: 1.5;
+  --body-fw: var(--font-weight-md);
+  --body-font-family: var(--base-font-family-en),
+    var(--base-font-family-default);
+
+  /* Heading Variables */
+  --h1-fs: calc(var(--base-font-size) * 2.5);
+  --h2-fs: calc(var(--base-font-size) * 2);
+  --h3-fs: calc(var(--base-font-size) * 1.5);
+  --h4-fs: calc(var(--base-font-size) * 1.25);
+  --h5-fs: var(--base-font-size);
+  --h6-fs: calc(var(--base-font-size) * 0.875);
+  --heading-lh: 1.2;
+  --heading-font-weight: var(--font-weight-xl);
+  --heading-font-family: var(--base-font-family-ar), var(--base-font-family-en),
+    var(--base-font-family-default);
+}

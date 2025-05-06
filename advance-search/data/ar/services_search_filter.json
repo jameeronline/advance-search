@@ -1,0 +1,143 @@
+[
+  {
+    "name": "التصنيف",
+    "id": "byType",
+    "URL": "#ByType",
+    "ariaExpanded": "false",
+    "childLink": [
+      {
+        "name": "الخدمات",
+        "id": "byTypeServices",
+        "data-filter": "SERVICES",
+        "URL": "#byTypeServices"
+      },
+      {
+        "name": "المحتويات",
+        "id": "byTypeContents",
+        "data-filter": "CONTENTS",
+        "URL": "#byTypeContents"
+      }
+    ]
+  },
+  {
+    "name": "القطاع",
+    "id": "bySector",
+    "URL": "#Sector",
+    "ariaExpanded": "false",
+    "childLink": [
+      {
+        "name": "الجوازات",
+        "id": "Passport-Services",
+        "data-filter": "Passport-Services",
+        "URL": "#Passport-Services"
+      },
+      {
+        "name": "المرور",
+        "id": "Traffic-Services",
+        "data-filter": "Traffic-Services",
+        "URL": "#Traffic-Services"
+      },
+      {
+        "name": "شؤون الوافدين",
+        "id": "Expatriates-Affairs-Services",
+        "data-filter": "Expatriate-Affairs-Services",
+        "URL": "#Expatriates-Affairs-Services"
+      },
+      {
+        "name": "الأحوال المدنية",
+        "id": "Civil-Affairs-Services",
+        "data-filter": "Civil-Affairs-Services",
+        "URL": "#Civil-Affairs-Services"
+      },
+      {
+        "name": "السجون",
+        "id": "Prisons",
+        "data-filter": "Prisons",
+        "URL": "#Prisons"
+      },
+      {
+        "name": "الأمن العام",
+        "id": "General-Directorate",
+        "data-filter": "General-Directorate",
+        "URL": "#General-Directorate"
+      },
+      {
+        "name": "إمارات المناطق",
+        "id": "Emirates",
+        "data-filter": "Emirates",
+        "URL": "#Emirates"
+      },
+      {
+        "name": "ديوان وزارة الداخلية",
+        "id": "Moi-Services",
+        "data-filter": "Moi-Services",
+        "URL": "#Moi-Services"
+      },
+      {
+        "name": "وزارة الحج والعمرة",
+        "id": "Hajj-amd-Umrah",
+        "data-filter": "Hajj-amd-Umrah",
+        "URL": "#Hajj-amd-Umrah"
+      },
+      {
+        "name": "النيابة العامة",
+        "id": "Public-Prosecution",
+        "data-filter": "Public-Prosecution",
+        "URL": "#Public-Prosecution"
+      },
+      {
+        "name": "خدمات عامة",
+        "id": "General-Services",
+        "data-filter": "General-Services",
+        "URL": "#General-Services"
+      }
+    ]
+  },
+  {
+    "name": "أفراد المجتمع",
+    "id": "byCommunityMember",
+    "URL": "#target-group",
+    "ariaExpanded": "false",
+    "childLink": [
+      {
+        "name": "مواطن",
+        "id": "cmCitizen",
+        "data-filter": "Citizen",
+        "URL": "#Citizen"
+      },
+      {
+        "name": "مقيم",
+        "id": "cmResident",
+        "data-filter": "Resident",
+        "URL": "#Resident"
+      },
+      {
+        "name": "زائر",
+        "id": "cmVisitor",
+        "data-filter": "Visitor",
+        "URL": "#Visitor"
+      }
+    ]
+  },
+  {
+    "name": "Service Channels",
+    "id": "byServiceChannel",
+    "childLink": [
+      {
+        "name": "Absher Portal",
+        "id": "absherPortal",
+        "data-filter": "Absher Portal"
+      },
+      {
+        "name": "Mobile Application",
+        "id": "mobileApplication",
+        "data-filter": "Mobile Application"
+      },
+      {
+        "name": "Tawakkalna",
+        "id": "tawakkalna",
+        "data-filter": "Tawakkalna"
+      }
+    ]
+  }
+]

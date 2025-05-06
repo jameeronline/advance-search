@@ -1,0 +1,31 @@
+:root {
+  --primary: #158519;
+  --secondary: #333;
+  --teritairy: #f3f3f3;
+
+  --default-white: #fff;
+  --default-black: #000;
+  --default-light-gray: #e8e8e8;
+  --default-dark-gray: #999;
+
+  --primary-color-h: 156deg;
+  --primary-color-s: 100%;
+  --primary-color-l: 34%;
+  --primary-color-0: hsl(var(--primary-color-h) 10% 34%);
+  --primary-color-10: hsl(var(--primary-color-h) 20% 34%);
+  --primary-color-20: hsl(var(--primary-color-h) 30% 34%);
+  --primary-color-30: hsl(var(--primary-color-h) 40% 34%);
+  --primary-color-40: hsl(var(--primary-color-h) 50% 34%);
+  --primary-color-50: hsl(var(--primary-color-h) 60% 34%);
+  --primary-color-60: hsl(var(--primary-color-h) 70% 34%);
+  --primary-color-70: hsl(var(--primary-color-h) 80% 34%);
+  --primary-color-80: hsl(var(--primary-color-h) 90% 34%);
+  --primary-color-90: hsl(var(--primary-color-h) 100% 34%);
+  --primary-color-100: hsl(var(--primary-color-h) 100% 30%);
+  --primary-color: #008550;
+  --primary-color-hover: var(--primary-color-100);
+  --error-color: hsl(358deg 76% 48%);
+  --success-color: hsl(156deg 100% 34%);
+  --warning-color: hsl(38deg 64% 45%);
+  --info-color: hsl(200deg 49% 38%);
+}

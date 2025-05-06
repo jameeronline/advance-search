@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS Design System</title>
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.22.2/dist/css/uikit.min.css" />
+  </head>
+  <body>
+    <div class="uk-container uk-container-xlarge">
+      <h1>HTML Form Elements</h1>
+
+      <form action="/action_page.php" method="post" name="register-form" id="register-form">
+        <legend>Personal Information</legend>
+
+        <label for="username">Text Input:</label><br />
+        <input type="text" id="username" name="username" placeholder="Enter your name" class="uk-input" /><br /><br />
+
+        <label for="password">Password:</label><br />
+        <input type="password" id="password" name="password" class="uk-input" /><br /><br />
+
+        <label for="email">Email:</label><br />
+        <input type="email" id="email" name="email" class="uk-input" /><br /><br />
+
+        <label for="mobile">Number:</label><br />
+        <input type="number" id="mobile" name="mobile" min="0" max="100" class="uk-input" /><br /><br />
+
+        <label for="age">Range:</label><br />
+        <input type="range" id="age" name="age" min="0" max="10" value="5" class="uk-range" /><br /><br />
+
+        <label for="dob">Date:</label><br />
+        <input type="date" id="dob" name="dob" class="uk-input" /><br /><br />
+
+        <label for="month">Month:</label><br />
+        <input type="month" id="month" name="month" class="uk-input" /><br /><br />
+
+        <label for="week">Week:</label><br />
+        <input type="week" id="week" name="week" class="uk-input" /><br /><br />
+
+        <label for="time">Time:</label><br />
+        <input type="time" id="time" name="time" class="uk-input" /><br /><br />
+
+        <label for="datetime">Date and Time:</label><br />
+        <input type="datetime" id="datetime" name="datetime" class="uk-input" /><br /><br />
+
+        <label for="url">URL:</label><br />
+        <input type="url" id="url" name="url" class="uk-input" /><br /><br />
+
+        <label for="telephone">Telephone:</label><br />
+        <input type="tel" id="telephone" name="telephone" class="uk-input" /><br /><br />
+
+        <label for="color">Color:</label><br />
+        <input type="color" id="color" name="color" value="#000000" class="uk-input" /><br /><br />
+
+        <label for="avatar">File Upload:</label><br />
+        <input type="file" id="avatar" name="avatar" multiple /><br /><br />
+
+        <label for="search-input">Search:</label><br />
+        <input type="search" id="search-input" name="search-input" placeholder="Search..." class="uk-input" /><br /><br />
+
+        <legend>Other Elements</legend>
+
+        <label for="cities">Select:</label><br />
+        <select id="cities" name="cities" class="uk-select">
+          <option value="option1">Option 1</option>
+          <option value="option2">Option 2</option>
+          <option value="option3">Option 3</option></select
+        ><br /><br />
+
+        <label>Radio Buttons(Gender):</label><br />
+        <input type="radio" id="gender1" name="gender" value="male" class="uk-radio" />
+        <label for="gender1">Male</label><br />
+        <input type="radio" id="gender2" name="gender" value="female" class="uk-radio" />
+        <label for="gender2">Female</label><br /><br />
+
+        <label>Checkboxes(Education):</label><br />
+        <input type="checkbox" id="checkbox1" name="education" value="Frontend" class="uk-checkbox" />
+        <label for="checkbox1">Frontend</label><br />
+        <input type="checkbox" id="checkbox2" name="education" value="Backend" class="uk-checkbox" />
+        <label for="checkbox2">Backend</label><br />
+        <input type="checkbox" id="checkbox3" name="education" value="Integration" class="uk-checkbox" />
+        <label for="checkbox3">Integration</label><br /><br />
+
+        <label for="message">Text Area:</label><br />
+        <textarea id="message" name="message" rows="4" cols="50" class="uk-textarea"></textarea><br /><br />
+
+        <p class="uk-margin">
+          <button class="uk-button uk-button-primary" type="submit">Submit</button>
+          <button class="uk-button uk-button-text">Reset</button>
+        </p>
+      </form>
+    </div>
+
+    <script src="js/moment.min.js"></script>
+    <script src="js/moment-hijri.js"></script>
+
+    <script>
+      function calculateDaysBetweenHijriDates(startDate, endDate) {
+        const start = moment(startDate, "iDD/iMM/iYYYY");
+        const end = moment(endDate, "iDD/iMM/iYYYY");
+
+        console.log("corresponding gregorian dates");
+        console.log(start.format("iDD/iMM/iYYYY [is] DD/MM/YYYY"));
+        console.log(end.format("iDD/iMM/iYYYY [is] DD/MM/YYYY"));
+
+        // Calculate the difference in days
+        const differenceInDays = end.diff(start, "days");
+        return differenceInDays;
+      }
+
+      // Example usage:
+      const startDate = "12/09/1446";
+      const endDate = "16/09/1446";
+
+      const days = calculateDaysBetweenHijriDates(startDate, endDate);
+      if (days >= 0) {
+        console.log(`Number of days between the two dates: ${days}`);
+      } else {
+        console.log(`Please choose the end date greater than start date`);
+      }
+    </script>
+
+    <script>
+      const registerForm = document.forms["register-form"];
+
+      registerForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        console.log("form submitted");
+
+        const registerFormEl = document.getElementById("register-form");
+        const registerFormData = new FormData(registerFormEl);
+        console.log(registerFormData.entries());
+
+        // Loop through FormData to log key-value pairs
+        for (const [key, value] of registerFormData.entries()) {
+          console.log(`${key}: ${value}`);
+        }
+
+        //formElements
+        const { username, password, email, mobile, gender, education } = registerForm.elements;
+
+        const selectedEductions = Array.from(education)
+          .filter((item) => item.checked)
+          .map((item) => item.value);
+
+        console.log(gender.value);
+        console.log(selectedEductions);
+
+        //userName
+        if (username.value == "") {
+          console.log("Please enter username", username.value);
+        } else {
+          console.log("username is valid", username.value);
+        }
+      });
+    </script>
+  </body>
+</html>
