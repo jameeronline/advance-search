@@ -377,72 +377,120 @@
         </h3>
 
         <div class="flex items-center gap-2">
-          <span class="text-sm whitespace-nowrap">No of entries</span>
-          <div class="relative">
-            <select
-              id="filter-type"
-              x-model="pageSize"
-              @change="filterData()"
-              class="relative appearance-none w-14 h-10 px-2 text-sm transition-all bg-white border rounded outline-none focus-visible:outline-none peer border-gray-300 text-gray-800 autofill:bg-white focus:border-emerald-500 focus:focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
-            >
-              <!-- <option value="">Select Type</option> -->
-              <option value="6">6</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-            </select>
-            <svg
-              class="w-5 h-5 pointer-events-none absolute bottom-2.5 right-2 peer-focus:fill-emerald-500"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path
-                d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"
-              ></path>
-            </svg>
+          <div class="flex items-center gap-2 hidden">
+            <span class="text-sm whitespace-nowrap">No of entries</span>
+            <div class="relative">
+              <select
+                id="filter-type"
+                x-model="pageSize"
+                @change="filterData()"
+                class="relative appearance-none w-14 h-10 px-2 text-sm transition-all bg-white border rounded outline-none focus-visible:outline-none peer border-gray-300 text-gray-800 autofill:bg-white focus:border-emerald-500 focus:focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+              >
+                <!-- <option value="">Select Type</option> -->
+                <option value="6">6</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+              </select>
+              <svg
+                class="w-5 h-5 pointer-events-none absolute bottom-2.5 right-2 peer-focus:fill-emerald-500"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"
+                ></path>
+              </svg>
+            </div>
+            <span class="text-sm whitespace-nowrap"> per page </span>
           </div>
-          <span class="text-sm whitespace-nowrap"> per page </span>
+          <!-- toggle view -->
+          <div class="flex justify-end mb-4">
+            <button
+              @click="isGridView = true"
+              :class="{'bg-emerald-600 text-white': isGridView, 'bg-gray-200 text-gray-800': !isGridView}"
+              class="px-4 py-2 rounded-l transition"
+            >
+              <svg
+                class="w-5 h-5"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M14 10V14H10V10H14ZM16 10H21V14H16V10ZM14 21H10V16H14V21ZM16 21V16H21V20C21 20.5523 20.5523 21 20 21H16ZM14 3V8H10V3H14ZM16 3H20C20.5523 3 21 3.44772 21 4V8H16V3ZM8 10V14H3V10H8ZM8 21H4C3.44772 21 3 20.5523 3 20V16H8V21ZM8 3V8H3V4C3 3.44772 3.44772 3 4 3H8Z"
+                ></path>
+              </svg>
+            </button>
+            <button
+              @click="isGridView = false"
+              :class="{'bg-emerald-600 text-white': !isGridView, 'bg-gray-200 text-gray-800': isGridView}"
+              class="px-4 py-2 rounded-r transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  d="M2 4C2 3.44772 2.44772 3 3 3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4ZM4 5V19H20V5H4ZM6 7H8V9H6V7ZM8 11H6V13H8V11ZM6 15H8V17H6V15ZM18 7H10V9H18V7ZM10 15H18V17H10V15ZM18 11H10V13H18V11Z"
+                ></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Search Result Cards -->
-      <div class="grid md:grid-cols-2 gap-6">
-        <template x-for="item in paginatedData()" :key="item.name">
-          <a
-            :href="item.url"
-            class="block bg-white border rounded-xl hover:shadow-lg hover:bg-emerald-50/60 hover:border-emerald-600 p-6 transition duration-300 ease-in-out transform hover:-translate-y-1 animate-fade-in"
-          >
-            <span
-              class="inline-block text-xs bg-emerald-100/50 text-emerald-700 px-2 py-1 rounded-lg"
-              x-text="item.type"
-            ></span>
-            <h2
-              class="text-base font-bold my-2 text-gray-800"
-              x-text="item.name"
-            ></h2>
-            <p
-              class="text-gray-600 text-sm mb-0 line-clamp-3"
-              x-text="item.desc"
-            ></p>
-            <p
-              class="text-gray-600 text-sm mb-4 hidden"
-              x-text="item.parent"
-            ></p>
-            <p
-              class="text-gray-600 text-sm mb-4 hidden"
-              x-text="item.community"
-            ></p>
-          </a>
-        </template>
+      <div>
+        <!-- Grid View -->
+        <div class="grid md:grid-cols-2 gap-6" x-show="isGridView">
+          <template x-for="item in paginatedData()" :key="item.name">
+            <a
+              :href="item.url"
+              class="block bg-white border rounded-xl hover:shadow-lg hover:bg-emerald-50/60 hover:border-emerald-600 p-6 transition duration-300 ease-in-out transform hover:-translate-y-1 animate-fade-in"
+            >
+              <span
+                class="inline-block text-xs bg-emerald-100/50 text-emerald-700 px-2 py-1 rounded-lg"
+                x-text="item.type"
+              ></span>
+              <h2
+                class="text-base font-bold my-2 text-gray-800"
+                x-text="item.name"
+              ></h2>
+              <p
+                class="text-gray-600 text-sm mb-0 line-clamp-3"
+                x-text="item.desc"
+              ></p>
+            </a>
+          </template>
+        </div>
 
-        <!-- No Results Message -->
-        <template x-if="filteredData.length === 0">
-          <div
-            class="col-span-full text-center text-gray-400 py-12 transition animate-fade-in"
-          >
-            No results found.
-          </div>
-        </template>
+        <!-- List View -->
+        <div class="flex flex-col gap-6" x-show="!isGridView">
+          <template x-for="item in paginatedData()" :key="item.name">
+            <a
+              :href="item.url"
+              class="flex items-center bg-white border rounded-xl hover:shadow-lg hover:bg-emerald-50/60 hover:border-emerald-600 p-6 transition duration-300 ease-in-out transform animate-fade-in"
+            >
+              <div class="flex-1">
+                <span
+                  class="inline-block text-xs bg-emerald-100/50 text-emerald-700 px-2 py-1 rounded-lg"
+                  x-text="item.type"
+                ></span>
+                <h2
+                  class="text-base font-bold text-gray-800 my-2"
+                  x-text="item.name"
+                ></h2>
+                <p
+                  class="text-gray-600 text-sm mb-0 line-clamp-3"
+                  x-text="item.desc"
+                ></p>
+              </div>
+            </a>
+          </template>
+        </div>
       </div>
 
       <!-- Pagination Controls -->
@@ -490,6 +538,7 @@
           labels: [],
           pinnedServicesList: [],
           highlightedIndex: -1,
+          isGridView: true, // Default to grid view
 
           init() {
             //services list
