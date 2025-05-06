@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en" x-data="searchApp()" x-init="init()" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Absher Services Search</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- AlpineJS CDN -->
+    <script
+      src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"
+      defer
+    ></script>
+
+    <style>
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fade-in {
+        animation: fade-in 0.5s ease-out both;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-gray-50 min-h-screen p-6 font-sans"
+    style="font-family: Inter, sans-serif"
+  >
+    <div class="max-w-5xl mx-auto my-20">
+      <!-- Search and Filters -->
+      <div class="mb-16">
+        <div class="mb-10">
+          <p x-text="labels.lbl_modal_title" class="text-base mb-1"></p>
+          <h1
+            class="text-4xl font-bold"
+            x-text="labels.lbl_modal_search_title"
+          ></h1>
+        </div>
+        <!-- Search Bar -->
+        <div class="flex flex-col md:flex-row md:items-center gap-2 mb-6">
+          <div class="flex w-full relative">
+            <!-- Component: Rounded large basic input -->
+            <div class="relative flex-1" @click.outside="closeSuggestions()">
+              <label for="search-input" class="sr-only cursor-text"
+                >Search Input</label
+              >
+              <input
+                id="search-input"
+                x-model="searchTerm"
+                @input="filterSuggestions()"
+                @keydown.arrow-down.prevent="navigateSuggestions(1)"
+                @keydown.arrow-up.prevent="navigateSuggestions(-1)"
+                @keydown.enter.prevent="searchRecords()"
+                @keydown.esc="closeSuggestions()"
+                type="text"
+                name="search-input"
+                :placeholder="labels.lbl_search_here"
+                class="relative w-full h-12 px-4 pl-12 transition-all border rounded outline-none focus-visible:outline-none peer border-gray-300 text-gray-800 autofill:bg-white invalid:border-pink-500 invalid:text-pink-500 focus:border-emerald-500 focus:outline-none invalid:focus:border-pink-500 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+                aria-autocomplete="list"
+                aria-controls="autocomplete-list"
+                aria-expanded="true"
+                aria-activedescendant="suggestion-{{ highlightedIndex }}"
+              />
+              <!-- Autocomplete Suggestions -->
+              <ul
+                id="autocomplete-list"
+                x-show="suggestions.length > 0"
+                class="absolute z-10 bg-white border border-gray-300 rounded-lg shadow-lg mt-1 w-full max-h-48 overflow-y-auto"
+                role="listbox"
+              >
+                <template
+                  x-for="(suggestion, index) in suggestions"
+                  :key="index"
+                >
+                  <li
+                    :id="'suggestion-' + index"
+                    @click="selectSuggestion(suggestion)"
+                    @mouseenter="highlightedIndex = index"
+                    @mouseleave="highlightedIndex = -1"
+                    :class="{'bg-gray-100': highlightedIndex === index, 'bg-white': highlightedIndex !== index}"
+                    class="px-4 py-2 cursor-pointer"
+                    role="option"
+                    :aria-selected="highlightedIndex === index"
+                  >
+                    <span x-text="suggestion.value"></span>
+                    <span
+                      class="text-xs text-gray-500 italic"
+                      x-show="suggestion.type === 'keyword'"
+                    >
+                    </span>
+                  </li>
+                </template>
+              </ul>
+            </div>
+            <!-- End Rounded large basic input-->
+
+            <svg
+              class="w-6 h-6 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"
+              />
+            </svg>
+
+            <template x-if="searchTerm.length">
+              <button
+                @click="clearSearch()"
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 transition"
+              >
+                ✕
+              </button>
+            </template>
+          </div>
+          <button
+            @click="searchRecords()"
+            class="bg-[#00663d] text-white h-12 px-6 rounded hover:bg-emerald-600 transition"
+          >
+            Search
+          </button>
+        </div>
+
+        <!-- Filter Dropdowns -->
+        <div class="flex flex-wrap gap-4 mb-6">
+          <div class="flex flex-col flex-1 relative">
+            <label
+              for="filter-type"
+              class="cursor-text font-semibold text-sm text-gray-600 mb-1"
+              x-text="labels.lbl_sector"
+            ></label>
+            <!-- Type Filter -->
+            <select
+              id="filter-type"
+              x-model="selectedType"
+              @change="filterData()"
+              class="relative appearance-none h-10 px-2 text-sm transition-all bg-white border rounded outline-none focus-visible:outline-none peer border-gray-300 text-gray-800 autofill:bg-white focus:border-emerald-500 focus:focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+            >
+              <option value="">Select Type</option>
+              <template
+                x-for="child in filterGroups[0].childLink"
+                :key="child.id"
+              >
+                <option
+                  :value="child['data-filter']"
+                  x-text="child.name"
+                ></option>
+              </template>
+            </select>
+            <svg
+              class="w-5 h-5 pointer-events-none absolute bottom-2.5 right-2 peer-focus:fill-emerald-500"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"
+              ></path>
+            </svg>
+          </div>
+
+          <!-- Parent Filter -->
+          <div class="flex flex-col flex-1 relative">
+            <label
+              for="filter-parent"
+              class="cursor-text font-semibold text-sm text-gray-600 mb-1"
+              x-text="labels.lbl_member"
+            ></label>
+            <select
+              id="filter-parent"
+              x-model="selectedParent"
+              @change="filterData()"
+              class="relative appearance-none h-10 px-2 text-sm transition-all bg-white border rounded outline-none focus-visible:outline-none peer border-gray-300 text-gray-800 autofill:bg-white focus:border-emerald-500 focus:focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+            >
+              <option value="">Select Category</option>
+              <template
+                x-for="child in filterGroups[1].childLink"
+                :key="child.id"
+              >
+                <option
+                  :value="child['data-filter']"
+                  x-text="child.name"
+                ></option>
+              </template>
+            </select>
+            <svg
+              class="w-5 h-5 pointer-events-none absolute bottom-2.5 right-2 peer-focus:fill-emerald-500"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"
+              ></path>
+            </svg>
+          </div>
+
+          <!-- Community Filter -->
+          <div class="flex flex-col flex-1 relative">
+            <label
+              for="filter-community"
+              class="cursor-text font-semibold text-sm text-gray-600 mb-1"
+              x-text="labels.lbl_group"
+            ></label>
+            <select
+              id="filter-community"
+              x-model="selectedCommunity"
+              @change="filterData()"
+              class="relative appearance-none h-10 px-2 text-sm transition-all bg-white border rounded outline-none focus-visible:outline-none peer border-gray-300 text-gray-800 autofill:bg-white focus:border-emerald-500 focus:focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+            >
+              <option value="">Select Community</option>
+              <template
+                x-for="child in filterGroups[2].childLink"
+                :key="child.id"
+              >
+                <option
+                  :value="child['data-filter']"
+                  x-text="child.name"
+                ></option>
+              </template>
+            </select>
+            <svg
+              class="w-5 h-5 pointer-events-none absolute bottom-2.5 right-2 peer-focus:fill-emerald-500"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"
+              ></path>
+            </svg>
+          </div>
+
+          <!-- Channel -->
+          <div class="flex flex-col flex-1 relative">
+            <label
+              for="filter-channel"
+              class="cursor-text font-semibold text-sm text-gray-600 mb-1"
+              x-text="labels.lbl_channel"
+            ></label>
+            <select
+              id="filter-channel"
+              x-model="selectedChannel"
+              @change="filterData()"
+              class="relative appearance-none h-10 px-2 text-sm transition-all bg-white border rounded outline-none focus-visible:outline-none peer border-gray-300 text-gray-800 autofill:bg-white focus:border-emerald-500 focus:focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+            >
+              <option value="">Select Channel</option>
+              <template
+                x-for="child in filterGroups[3].childLink"
+                :key="child.id"
+              >
+                <option
+                  :value="child['data-filter']"
+                  x-text="child.name"
+                ></option>
+              </template>
+            </select>
+            <svg
+              class="w-5 h-5 pointer-events-none absolute bottom-2.5 right-2 peer-focus:fill-emerald-500"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"
+              ></path>
+            </svg>
+          </div>
+
+          <!-- Sort -->
+          <div class="flex flex-col flex-1">
+            <label
+              for="sortby"
+              class="invisible cursor-text font-semibold text-sm mb-1"
+              x-text="labels.lbl_sort_by"
+            ></label>
+            <div class="flex gap-2">
+              <!-- Show Sort A-Z button only if the current sort direction is not 'asc' -->
+              <template x-if="sortDirection !== 'asc'">
+                <button
+                  @click="sortDirection = 'asc'; filterData()"
+                  class="inline-flex items-center justify-center h-10 gap-2 px-5 text-sm font-medium tracking-wide transition duration-300 border rounded focus-visible:outline-none whitespace-nowrap border-gray-500 text-gray-800 hover:border-gray-600 hover:text-gray-900 focus:border-gray-700 focus:text-gray-700 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-300 disabled:shadow-none"
+                >
+                  Sort A-Z
+                  <svg
+                    class="w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M13.0001 16.1716L18.3641 10.8076L19.7783 12.2218L12.0001 20L4.22192 12.2218L5.63614 10.8076L11.0001 16.1716V4H13.0001V16.1716Z"
+                    ></path>
+                  </svg>
+                </button>
+              </template>
+
+              <!-- Show Sort Z-A button only if the current sort direction is not 'desc' -->
+              <template x-if="sortDirection !== 'desc'">
+                <button
+                  @click="sortDirection = 'desc'; filterData()"
+                  class="inline-flex items-center justify-center h-10 gap-2 px-5 text-sm font-medium tracking-wide transition duration-300 border rounded focus-visible:outline-none whitespace-nowrap border-gray-500 text-gray-800 hover:border-gray-600 hover:text-gray-900 focus:border-gray-700 focus:text-gray-700 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-300 disabled:shadow-none"
+                >
+                  Sort Z-A
+                  <svg
+                    class="w-4 h-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M13.0001 7.82843V20H11.0001V7.82843L5.63614 13.1924L4.22192 11.7782L12.0001 4L19.7783 11.7782L18.3641 13.1924L13.0001 7.82843Z"
+                    ></path>
+                  </svg>
+                </button>
+              </template>
+
+              <button
+                @click="clearFilters()"
+                class="inline-flex items-center justify-center text-black px-4 py-2 transition text-sm"
+                title="Clear Filters"
+              >
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+              <path d="M2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2V4C16.4183 4 20 7.58172 20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 9.53614 5.11383 7.33243 6.86543 5.86492L9 8V2L3 2L5.44648 4.44656C3.33509 6.28002 2 8.9841 2 12Z"></path>
+            </svg> -->
+                <span class="underline whitespace-nowrap hover:text-emerald-600"
+                  >Clear All</span
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Result Cards -->
+      <template x-if="!searchTerm.length">
+        <div class="flex flex-col gap-2 mb-10">
+          <h3 class="text-sm font-bold text-gray-600">Suggestions</h3>
+          <div class="flex gap-2 flex-wrap">
+            <template x-for="item in pinnedServicesList" :key="item.name">
+              <a
+                :href="item.url"
+                class="inline-flex items-center justify-center h-10 gap-2 px-4 text-sm font-medium tracking-wide transition-all duration-300 border rounded focus-visible:outline-none whitespace-nowrap border-gray-300 text-gray-800 hover:bg-emerald-50/60 hover:border-emerald-600 hover:text-emerald-800 focus:border-gray-700 focus:text-gray-700 disabled:cursor-not-allowed disabled:border-gray-300 disabled:text-gray-300 disabled:shadow-none"
+              >
+                <span x-text="item.name"></span>
+              </a>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <!-- Search Summary -->
+      <div class="flex mb-4 justify-between">
+        <h3 class="text-base font-bold">
+          Search Results
+          <span x-text="'(' + filteredData.length + ' results)'"></span>
+        </h3>
+
+        <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 hidden">
+            <span class="text-sm whitespace-nowrap">No of entries</span>
+            <div class="relative">
+              <select
+                id="filter-type"
+                x-model="pageSize"
+                @change="filterData()"
+                class="relative appearance-none w-14 h-10 px-2 text-sm transition-all bg-white border rounded outline-none focus-visible:outline-none peer border-gray-300 text-gray-800 autofill:bg-white focus:border-emerald-500 focus:focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"
+              >
+                <!-- <option value="">Select Type</option> -->
+                <option value="6">6</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+              </select>
+              <svg
+                class="w-5 h-5 pointer-events-none absolute bottom-2.5 right-2 peer-focus:fill-emerald-500"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M11.9999 13.1714L16.9497 8.22168L18.3639 9.63589L11.9999 15.9999L5.63599 9.63589L7.0502 8.22168L11.9999 13.1714Z"
+                ></path>
+              </svg>
+            </div>
+            <span class="text-sm whitespace-nowrap"> per page </span>
+          </div>
+          <!-- toggle view -->
+          <div class="flex justify-end mb-4">
+            <button
+              @click="isGridView = true"
+              :class="{'bg-emerald-600 text-white': isGridView, 'bg-gray-200 text-gray-800': !isGridView}"
+              class="px-4 py-2 rounded-l transition"
+            >
+              <svg
+                class="w-5 h-5"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M14 10V14H10V10H14ZM16 10H21V14H16V10ZM14 21H10V16H14V21ZM16 21V16H21V20C21 20.5523 20.5523 21 20 21H16ZM14 3V8H10V3H14ZM16 3H20C20.5523 3 21 3.44772 21 4V8H16V3ZM8 10V14H3V10H8ZM8 21H4C3.44772 21 3 20.5523 3 20V16H8V21ZM8 3V8H3V4C3 3.44772 3.44772 3 4 3H8Z"
+                ></path>
+              </svg>
+            </button>
+            <button
+              @click="isGridView = false"
+              :class="{'bg-emerald-600 text-white': !isGridView, 'bg-gray-200 text-gray-800': isGridView}"
+              class="px-4 py-2 rounded-r transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-5 h-5"
+              >
+                <path
+                  d="M2 4C2 3.44772 2.44772 3 3 3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4ZM4 5V19H20V5H4ZM6 7H8V9H6V7ZM8 11H6V13H8V11ZM6 15H8V17H6V15ZM18 7H10V9H18V7ZM10 15H18V17H10V15ZM18 11H10V13H18V11Z"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search Result Cards -->
+      <div>
+        <!-- Grid View -->
+        <div class="grid md:grid-cols-2 gap-6" x-show="isGridView">
+          <template x-for="item in paginatedData()" :key="item.name">
+            <a
+              :href="item.url"
+              class="block bg-white border rounded-xl hover:shadow-lg hover:bg-emerald-50/60 hover:border-emerald-600 p-6 transition duration-300 ease-in-out transform hover:-translate-y-1 animate-fade-in"
+            >
+              <span
+                class="inline-block text-xs bg-emerald-100/50 text-emerald-700 px-2 py-1 rounded-lg"
+                x-text="item.type"
+              ></span>
+              <h2
+                class="text-base font-bold my-2 text-gray-800"
+                x-text="item.name"
+              ></h2>
+              <p
+                class="text-gray-600 text-sm mb-0 line-clamp-3"
+                x-text="item.desc"
+              ></p>
+            </a>
+          </template>
+        </div>
+
+        <!-- List View -->
+        <div class="flex flex-col gap-6" x-show="!isGridView">
+          <template x-for="item in paginatedData()" :key="item.name">
+            <a
+              :href="item.url"
+              class="flex items-center bg-white border rounded-xl hover:shadow-lg hover:bg-emerald-50/60 hover:border-emerald-600 p-6 transition duration-300 ease-in-out transform animate-fade-in"
+            >
+              <div class="flex-1">
+                <span
+                  class="inline-block text-xs bg-emerald-100/50 text-emerald-700 px-2 py-1 rounded-lg"
+                  x-text="item.type"
+                ></span>
+                <h2
+                  class="text-base font-bold text-gray-800 my-2"
+                  x-text="item.name"
+                ></h2>
+                <p
+                  class="text-gray-600 text-sm mb-0 line-clamp-3"
+                  x-text="item.desc"
+                ></p>
+              </div>
+            </a>
+          </template>
+        </div>
+      </div>
+
+      <!-- Pagination Controls -->
+      <template x-if="filteredData.length !== 0">
+        <div class="flex justify-center items-center mt-8 gap-4">
+          <button
+            @click="prevPage()"
+            :disabled="currentPage === 1"
+            class="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition"
+          >
+            Previous
+          </button>
+          <span class="text-sm text-gray-700">
+            Page <span x-text="currentPage"></span> of
+            <span x-text="totalPages()"></span>
+          </span>
+          <button
+            @click="nextPage()"
+            :disabled="currentPage === totalPages()"
+            class="px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 transition"
+          >
+            Next
+          </button>
+        </div>
+      </template>
+    </div>
+
+    <!-- AlpineJS Search App -->
+    <script>
+      function searchApp() {
+        return {
+          data: [],
+          filteredData: [],
+          suggestions: [],
+          searchTerm: "",
+          selectedType: "",
+          selectedParent: "",
+          selectedCommunity: "",
+          selectedChannel: "",
+          sortDirection: "asc",
+          pageSize: 6,
+          currentPage: 1,
+          lang: document.documentElement.lang,
+          filterGroups: [],
+          labels: [],
+          pinnedServicesList: [],
+          highlightedIndex: -1,
+          isGridView: true, // Default to grid view
+
+          init() {
+            //services list
+            fetch(`/advance-search/data/${this.lang}/services_search_data.json`)
+              .then((res) => res.json())
+              .then((data) => {
+                this.data = data;
+                this.filteredData = this.data;
+              });
+
+            //filter group
+            fetch(
+              `/advance-search/data/${this.lang}/services_search_filter.json`
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                this.filterGroups = data;
+              });
+
+            //labels group
+            fetch(
+              `/advance-search/data/${this.lang}/services_search_settings.json`
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                this.labels = data;
+              });
+
+            //labels group
+            fetch(
+              `/advance-search/data/${this.lang}/services_search_suggestion.json`
+            )
+              .then((res) => res.json())
+              .then((data) => {
+                this.pinnedServicesList = data;
+              });
+          },
+
+          filterSuggestions() {
+            if (this.searchTerm.length > 0) {
+              const searchTermLower = this.searchTerm.toLowerCase();
+              const uniqueSuggestions = new Set(); // Use a Set to track unique suggestions
+              this.suggestions = [];
+
+              this.data.forEach((item) => {
+                // Check if the name matches
+                const normalizedName = item.name.toLowerCase(); // Normalize to lowercase
+                if (normalizedName.includes(searchTermLower)) {
+                  if (!uniqueSuggestions.has(normalizedName)) {
+                    uniqueSuggestions.add(normalizedName);
+                    this.suggestions.push({ type: "name", value: item.name }); // Keep original case for display
+                  }
+                }
+
+                // Check if any keyword matches
+                const matchedKeyword = item.keywords
+                  .split(/[-–,]+/) // Split by delimiters: "-", "–", ","
+                  .map((keyword) => keyword.trim()) // Trim whitespace
+                  .find((keyword) =>
+                    keyword.toLowerCase().includes(searchTermLower)
+                  );
+
+                if (matchedKeyword) {
+                  const normalizedKeyword = matchedKeyword.toLowerCase(); // Normalize to lowercase
+                  if (!uniqueSuggestions.has(normalizedKeyword)) {
+                    uniqueSuggestions.add(normalizedKeyword);
+                    this.suggestions.push({
+                      type: "keyword",
+                      value: matchedKeyword, // Keep original case for display
+                    });
+                  }
+                }
+              });
+
+              // Limit to 20 suggestions
+              this.suggestions = this.suggestions.slice(0, 20);
+            } else {
+              this.suggestions = [];
+            }
+          },
+
+          navigateSuggestions(direction) {
+            const maxIndex = this.suggestions.length - 1;
+            this.highlightedIndex = Math.max(
+              0,
+              Math.min(maxIndex, this.highlightedIndex + direction)
+            );
+
+            // Ensure the highlighted item is visible
+            this.$nextTick(() => {
+              const highlightedElement = document.getElementById(
+                `suggestion-${this.highlightedIndex}`
+              );
+              if (highlightedElement) {
+                highlightedElement.scrollIntoView({
+                  block: "nearest",
+                  behavior: "smooth",
+                });
+              }
+            });
+          },
+
+          selectSuggestion(suggestion) {
+            this.searchTerm = suggestion.value; // Set the selected suggestion value in the input
+            this.suggestions = []; // Clear the suggestion list
+            this.highlightedIndex = -1; // Reset the highlighted index
+            this.filterData(); // Trigger filtering based on the selected suggestion
+            this.closeSuggestions(); // Close the suggestion list
+          },
+
+          closeSuggestions() {
+            this.suggestions = [];
+            this.highlightedIndex = -1;
+          },
+
+          filterData() {
+            this.currentPage = 1;
+            this.filteredData = this.data
+              .filter(
+                (item) =>
+                  item.name
+                    .toLowerCase()
+                    .includes(this.searchTerm.toLowerCase()) ||
+                  item.keywords
+                    .toLowerCase()
+                    .includes(this.searchTerm.toLowerCase())
+              )
+              .filter((item) =>
+                this.selectedType ? item.type === this.selectedType : true
+              )
+              .filter((item) =>
+                this.selectedParent ? item.parent === this.selectedParent : true
+              )
+              .filter((item) =>
+                this.selectedCommunity
+                  ? item.community?.includes(this.selectedCommunity)
+                  : true
+              )
+              .filter((item) =>
+                this.selectedChannel
+                  ? item.channel?.includes(this.selectedChannel)
+                  : true
+              )
+              .sort((a, b) =>
+                this.sortDirection === "asc"
+                  ? a.name.localeCompare(b.name)
+                  : b.name.localeCompare(a.name)
+              );
+          },
+
+          searchRecords() {
+            if (
+              this.highlightedIndex >= 0 &&
+              this.highlightedIndex < this.suggestions.length
+            ) {
+              // Select the highlighted suggestion
+              this.selectSuggestion(this.suggestions[this.highlightedIndex]);
+            } else {
+              // Perform a normal search if no suggestion is highlighted
+              this.filterData();
+            }
+
+            // Close the suggestion list
+            this.closeSuggestions();
+          },
+
+          clearSearch() {
+            this.searchTerm = "";
+            this.filterData();
+          },
+
+          clearFilters() {
+            this.searchTerm = "";
+            this.selectedType = "";
+            this.selectedParent = "";
+            this.selectedCommunity = "";
+            this.selectedChannel = "";
+            this.sortDirection = "asc";
+            this.pageSize = 6;
+            this.currentPage = 1;
+            this.filterData();
+          },
+
+          paginatedData() {
+            let start = (this.currentPage - 1) * this.pageSize;
+            let end = start + parseInt(this.pageSize);
+            return this.filteredData.slice(start, end);
+          },
+
+          totalPages() {
+            return Math.ceil(this.filteredData.length / this.pageSize) || 1;
+          },
+
+          nextPage() {
+            if (this.currentPage < this.totalPages()) {
+              this.currentPage++;
+              //window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top
+            }
+          },
+
+          prevPage() {
+            if (this.currentPage > 1) {
+              this.currentPage--;
+              //window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top
+            }
+          },
+        };
+      }
+    </script>
+  </body>
+</html>
